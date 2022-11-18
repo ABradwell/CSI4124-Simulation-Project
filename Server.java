@@ -5,20 +5,22 @@ public abstract class Server {
     private int number_served;
     private long hourly_wage;
     private User current_user_being_served;
-
+    private boolean running;
     private boolean busy;
 
     private Queue linked_queue;
 
     public Server() {
+
     }
 
-    public Server(long time_busy, long time_idle, int number_served, long hourly_wage, User current_user_being_served, boolean busy, Queue linked_queue) {
+    public Server(long time_busy, long time_idle, int number_served, long hourly_wage, User current_user_being_served, boolean running, boolean busy, Queue linked_queue) {
         this.time_busy = time_busy;
         this.time_idle = time_idle;
         this.number_served = number_served;
         this.hourly_wage = hourly_wage;
         this.current_user_being_served = current_user_being_served;
+        this.running = running;
         this.busy = busy;
         this.linked_queue = linked_queue;
     }
@@ -79,6 +81,14 @@ public abstract class Server {
         this.linked_queue = linked_queue;
     }
 
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
+
     //    ---------------------------------------------------------------------------------
 
 
@@ -88,5 +98,6 @@ public abstract class Server {
     // Method which launches a constant loop asynchronously running the servers inner workings (taking patients from linked queue)
     public abstract void run_server();
 
+    public abstract void stop_server();
 
 }

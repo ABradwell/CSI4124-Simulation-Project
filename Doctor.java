@@ -21,6 +21,11 @@ public class Doctor extends Server {
          */
     }
 
+    @Override
+    public void stop_server() {
+
+    }
+
     public long maintenance() {
         /**
          * Called between patients, and if waiting_for_break then Doctor goes on break

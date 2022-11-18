@@ -36,4 +36,9 @@ public class Receptionist extends Server {
          */
     }
 
+    @Override
+    public void stop_server() {
+
+    }
+
 }
