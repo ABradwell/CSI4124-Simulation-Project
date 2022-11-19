@@ -2,12 +2,11 @@ import javax.print.Doc;
 
 public class Main_Script {
 
-    public static void print_all_stats() {
+    public static void print_all_stats(Server receptions, Server senior_doctor, Server junior_doctor) {
 
     }
 
     public static void main(String[] args) {
-
 
 //        time units are in minutes
         int doctor_break_time = 15;
@@ -35,17 +34,16 @@ public class Main_Script {
         senior_doctor.run_server();
         junior_doctor.run_server();
 
-
 //        TODO: User generation and adding to first queue.
 
         for (int i = 0; i< max_time; i++) {
-
 
             receptionist.tick();
             senior_doctor.tick();
             junior_doctor.tick();
         }
 
+//        TODO: Add stopping functionality to servers
 
         print_all_stats(senior_doctor, junior_doctor, receptionist);
     }
