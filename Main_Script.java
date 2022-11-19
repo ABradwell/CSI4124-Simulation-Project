@@ -1,4 +1,10 @@
+import javax.print.Doc;
+
 public class Main_Script {
+
+    public static void print_all_stats() {
+
+    }
 
     public static void main(String[] args) {
 
@@ -40,5 +46,9 @@ public class Main_Script {
             junior_doctor.tick();
         }
 
+
+        print_all_stats(senior_doctor, junior_doctor, receptionist);
     }
+
+
 }
