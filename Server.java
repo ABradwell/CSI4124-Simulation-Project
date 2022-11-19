@@ -1,43 +1,47 @@
 public abstract class Server {
 
-    private long time_busy;
-    private long time_idle;
+    private int cur_time;
+
+    private int time_busy;
+    private int time_idle;
     private int number_served;
     private long hourly_wage;
     private User current_user_being_served;
+    private int time_serving_current_user;
     private boolean running;
     private boolean busy;
 
-    private Queue linked_queue;
+    private PatientQueue linked_queue;
 
     public Server() {
 
     }
 
-    public Server(long time_busy, long time_idle, int number_served, long hourly_wage, User current_user_being_served, boolean running, boolean busy, Queue linked_queue) {
+    public Server(int time_busy, int time_idle, int number_served, long hourly_wage, User current_user_being_served, boolean running, boolean busy, PatientQueue linked_queue, int time_serving_current_user) {
         this.time_busy = time_busy;
         this.time_idle = time_idle;
         this.number_served = number_served;
         this.hourly_wage = hourly_wage;
         this.current_user_being_served = current_user_being_served;
+        this.time_serving_current_user = time_serving_current_user;
         this.running = running;
         this.busy = busy;
         this.linked_queue = linked_queue;
     }
 
-    public long getTime_busy() {
+    public int getTime_busy() {
         return time_busy;
     }
 
-    public void setTime_busy(long time_busy) {
+    public void setTime_busy(int time_busy) {
         this.time_busy = time_busy;
     }
 
-    public long getTime_idle() {
+    public int getTime_idle() {
         return time_idle;
     }
 
-    public void setTime_idle(long time_idle) {
+    public void setTime_idle(int time_idle) {
         this.time_idle = time_idle;
     }
 
@@ -65,6 +69,22 @@ public abstract class Server {
         this.current_user_being_served = current_user_being_served;
     }
 
+    public int getCur_time() {
+        return cur_time;
+    }
+
+    public void setCur_time(int cur_time) {
+        this.cur_time = cur_time;
+    }
+
+    public int getTime_serving_current_user() {
+        return time_serving_current_user;
+    }
+
+    public void setTime_serving_current_user(int time_serving_current_user) {
+        this.time_serving_current_user = time_serving_current_user;
+    }
+
     public boolean isBusy() {
         return busy;
     }
@@ -73,11 +93,11 @@ public abstract class Server {
         this.busy = busy;
     }
 
-    public Queue getLinked_queue() {
+    public PatientQueue getLinked_queue() {
         return linked_queue;
     }
 
-    public void setLinked_queue(Queue linked_queue) {
+    public void setLinked_queue(PatientQueue linked_queue) {
         this.linked_queue = linked_queue;
     }
 
@@ -99,5 +119,18 @@ public abstract class Server {
     public abstract void run_server();
 
     public abstract void stop_server();
+
+    public void tick() {
+
+        cur_time++;
+
+        if (busy) {
+            time_busy++;
+        } else {
+            time_idle++;
+        }
+
+        time_serving_current_user++;
+    }
 
 }

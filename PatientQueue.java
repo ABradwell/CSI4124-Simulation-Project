@@ -1,20 +1,26 @@
-public class Queue {
+
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class PatientQueue {
 
     private int max_number_of_users;
-
     private int current_user_count;
-    private int current_users_in_queue;
     private int total_wait_time;
 
-    private Queue users;
+    private Queue<User> users;
 
-    public Queue() {
+    public PatientQueue() {
+
+        this.max_number_of_users = 150;
+        this.current_user_count = 0;
+        this.total_wait_time = 0;
+        this.users = new LinkedList<>();
     }
 
-    public Queue(int max_number_of_users, int current_user_count, int current_users_in_queue, int total_wait_time, Queue users) {
+    public PatientQueue(int max_number_of_users, int current_user_count, int total_wait_time, Queue<User> users) {
         this.max_number_of_users = max_number_of_users;
         this.current_user_count = current_user_count;
-        this.current_users_in_queue = current_users_in_queue;
         this.total_wait_time = total_wait_time;
         this.users = users;
     }
@@ -35,14 +41,6 @@ public class Queue {
         this.current_user_count = current_user_count;
     }
 
-    public int getCurrent_users_in_queue() {
-        return current_users_in_queue;
-    }
-
-    public void setCurrent_users_in_queue(int current_users_in_queue) {
-        this.current_users_in_queue = current_users_in_queue;
-    }
-
     public int getTotal_wait_time() {
         return total_wait_time;
     }
@@ -51,11 +49,11 @@ public class Queue {
         this.total_wait_time = total_wait_time;
     }
 
-    public Queue getUsers() {
+    public Queue<User> getUsers() {
         return users;
     }
 
-    public void setUsers(Queue users) {
+    public void setUsers(Queue<User> users) {
         this.users = users;
     }
 
