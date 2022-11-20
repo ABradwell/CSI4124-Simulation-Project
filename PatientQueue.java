@@ -66,13 +66,22 @@ public class PatientQueue {
          *
          * @Param u: new user to be added to the queue
          */
+        this.users.add(u);
+        this.current_user_count += 1;
+        //total_wait_time; ?
     }
 
-    public User get_next_user(User u) {
+    public User get_next_user() {
         /**
          * return next user waiting in line, if present. Otherwise null.
          */
-
-        return null;
+        User next_user = this.users.peek();
+        if (next_user != null){
+            this.users.remove();
+            this.current_user_count -= 1;
+            return next_user;
+        } else {
+            return null;
+        }
     }
 }
