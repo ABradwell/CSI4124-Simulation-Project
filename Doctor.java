@@ -8,24 +8,25 @@ public class Doctor extends Server {
 
     private long on_break_time_start = 0;
     private long breakdown_time_start = 0;
-    private Equipment equipment;
+
     private boolean isSeniorDoctor;
     private boolean isBrokenDown = false;
     private boolean isOnBreak = false;
 
-    public Doctor(String name, long hourly_wage, int max_number_of_users, boolean isSeniorDoctor, Equipment equipment) {
+    public Doctor(String name, long hourly_wage, int max_number_of_users, boolean isSeniorDoctor) {
         super(name, hourly_wage, max_number_of_users);
         this.isSeniorDoctor = isSeniorDoctor;
-        this.equipment = equipment;
+//        this.equipment = equipment;
     }
 
     @Override
     public boolean serve_user() {
         /**
-         * Deal with current user being served, if empty pull from associated queue.
-         * Uses equipment during, and when done with user the user is released from the system all together
+         * New user has been admitted to the waiting room. The doctor may be on
+         * break, or the machines may be down. Stats for current doctor updated,
+         * and new patient begins being serviced if available.
          *
-         * @return whether a user has been served
+         * @returns: boolean if new user is accepted and valid
          */
         
         if (isUnderMaintenance()) {
@@ -33,11 +34,14 @@ public class Doctor extends Server {
         }
 
         User next_usr = my_queue.get_next_user();
+        isBusy = true;
         if (next_usr == null) {
             isBusy = false;
             return false;
         }
-        
+
+        next_usr.stop_waiting(this.curr_time);
+
         number_served += 1;
         current_user_being_served = next_usr;
         remaining_service_time = next_usr.getService_time();
@@ -45,22 +49,12 @@ public class Doctor extends Server {
         return true;
     }
 
-    @Override
-    public void run_server() {
-        /**
-         * Asynchronous method to be called, launches the doctor into work, pulling from queue and serving if able.
-         */
-    }
-
-    @Override
-    public void stop_server() {
-
-    }
-
     public boolean isUnderMaintenance() {
         /**
-         * Called between patients to check if maintenance is required
-         * @return: whether the server is under maintenance
+         * Checks if a break is required, or if the doctor's equipment is scheduled
+         * for a breakdown.
+         *
+         * @return: boolean if either the machine or doctor are broken down
          */
 
         if (isBrokenDown) {

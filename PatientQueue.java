@@ -8,6 +8,7 @@ public class PatientQueue {
     private int current_user_count;
     private int total_wait_time;
 
+
     private Queue<User> users;
 
     public PatientQueue() {
@@ -68,29 +69,50 @@ public class PatientQueue {
 
 //    ------------------------------------------------------------
 
+    public boolean room_for_more_patients() {
+
+        return this.current_user_count < this.max_number_of_users;
+    }
+
     public void add_user(User u) {
         /**
          * New patient arrives in this queue, updating the current variables accordingly
          *
-         * @Param u: new user to be added to the queue
+         * @Param User: new user to be added to the queue
          */
+
         this.users.add(u);
         this.current_user_count += 1;
         this.total_wait_time += u.getService_time();
+
     }
 
     public User get_next_user() {
         /**
-         * return next user waiting in line, if present. Otherwise null.
+         * Take the next user waiting in line. Since patients are non-critical, it is a FIFO system queue.
+         *
+         * @return User: User object of next person in line
          */
         User next_user = this.users.peek();
         if (next_user != null){
             this.users.remove();
             this.current_user_count -= 1;
             this.total_wait_time -= next_user.getService_time();
+
             return next_user;
         } else {
             return null;
         }
+    }
+
+    public String toString() {
+
+        String msg = "  Queue Data:\n";
+
+        msg += String.format("      max_number_of_users: %s\n", max_number_of_users);
+        msg += String.format("      current_user_count: %s\n", current_user_count);
+        msg += String.format("      total_wait_time: %s\n", total_wait_time);
+
+        return msg;
     }
 }

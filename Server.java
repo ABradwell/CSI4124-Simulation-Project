@@ -103,18 +103,15 @@ public abstract class Server {
 
     //    ---------------------------------------------------------------------------------
 
-
-    // Abstract since the doctors will serve using equipment, while the receptionist uses a determining equation
     public abstract boolean serve_user();
-
-    // Method which launches a constant loop asynchronously running the servers inner workings (taking patients from linked queue)
-    public abstract void run_server();
     
     public abstract boolean isUnderMaintenance();
 
-    public abstract void stop_server();
-
     public void tick() {
+        /**
+         * This is the timing synchronization feature of the servers. Since 3 servers are
+         * running in parallel, this method assures that each server steps forward at the same time.
+         */
 
         curr_time++;
 

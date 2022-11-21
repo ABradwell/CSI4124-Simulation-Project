@@ -49,16 +49,20 @@ public class User {
         this.time_arrived = time_arrived;
     }
 
-    public void start_waiting () {
+    public void start_waiting (int cur_time) {
         /**
          *  Resume time waiting counter by updating last_time_waiting_started
          */
 
+        last_time_waiting_started = cur_time;
+
     }
 
-    public void stop_waiting () {
+    public void stop_waiting (int cur_time) {
         /**
          * User no longer waiting, add the difference between last_time_waiting_started and current to time_waited
          */
+
+        time_waited = time_waited + (cur_time - last_time_waiting_started);
     }
 }

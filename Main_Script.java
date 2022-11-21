@@ -18,21 +18,36 @@ public class Main_Script {
     private static final int EQUIPMENT_LIFETIME_SDOC = 600;
 
     public static void print_all_stats(Server receptions, Server senior_doctor, Server junior_doctor) {
+        /**
+         *     This function outputs the information for the system.
+         *     Used to display and verify the system is correctly functioning
+         */
         System.out.println(receptions);
+        System.out.println(receptions.my_queue);
         System.out.println(senior_doctor);
+        System.out.println(senior_doctor.my_queue);
         System.out.println(junior_doctor);
+        System.out.println(junior_doctor.my_queue);
     }
 
     public static PatientQueue generate_patient_data() {
+        /**
+         *  Using out papers-dataset, generate a queue of customers
+         *  to arrive to the clinic over the course of the simulation
+         */
         // generate: arrival time, severity, receptionist service time 
         int t = 0;
+
         Random random = new Random();
         PatientQueue patients = new PatientQueue();
+
         for (int i = 0; i < 1000; i++) {
+
                 int rand_arrival =random.ints(1, 101).findFirst().getAsInt();
                 int rand_severity = random.ints(1, 1001).findFirst().getAsInt();
                 int arrival = 0;
                 int severity = 0;
+
                 if (i == 0) {
                         arrival = 0;
                 } else if (rand_arrival <= 57) {
@@ -64,50 +79,54 @@ public class Main_Script {
 
     public static void main(String[] args) {
 
-
         // time units are in minutes
         int hours_of_simulation = 48;
         long max_time = 60*hours_of_simulation;
 
+        // Create out 3 queues
         PatientQueue receptionist_queue = new PatientQueue(MAX_NUM_USERS_REC);
         PatientQueue senior_doctor_queue = new PatientQueue(MAX_NUM_USERS_JDOC);
         PatientQueue junior_doctor_queue = new PatientQueue(MAX_NUM_USERS_SDOC);
 
+        // Create the receptionist, linked to the first queue
         Receptionist receptionist = new Receptionist(NAME_REC, HOURLY_WAGE_REC, MAX_NUM_USERS_REC, senior_doctor_queue, junior_doctor_queue);
         receptionist.setMy_queue(receptionist_queue);
 
-        Equipment sr_equipment = new Equipment(EQUIPMENT_LIFETIME_SDOC, false);
-        Doctor senior_doctor = new Doctor(NAME_SDOC, HOURLY_WAGE_SDOC, MAX_NUM_USERS_SDOC, true, sr_equipment);
+        // Create the senior doctor, and assign their queue
+        Doctor senior_doctor = new Doctor(NAME_SDOC, HOURLY_WAGE_SDOC, MAX_NUM_USERS_SDOC, true);
         senior_doctor.setMy_queue(senior_doctor_queue);
 
-        Equipment jr_equipment = new Equipment(EQUIPMENT_LIFETIME_JDOC, false);
-        Doctor junior_doctor = new Doctor(NAME_JDOC, HOURLY_WAGE_JDOC, MAX_NUM_USERS_JDOC, false, jr_equipment);
+        // Create junior doctor, and assign their queue
+        Doctor junior_doctor = new Doctor(NAME_JDOC, HOURLY_WAGE_JDOC, MAX_NUM_USERS_JDOC, false);
         junior_doctor.setMy_queue(junior_doctor_queue);
 
-
-        // This should cause the servers to start pulling from their queue, waiting for the first patients (while no patients wait until patients etc)
-        receptionist.run_server();
-        senior_doctor.run_server();
-        junior_doctor.run_server();
-
+        // Create patients for simulation
         PatientQueue patients = generate_patient_data();
-        receptionist_queue.add_user(patients.get_next_user());
+
+        // Get first patient from incoming queue, prepare to run simulation
+        User first_patient = patients.get_next_user();
+        first_patient.stop_waiting(0);
+        receptionist_queue.add_user(first_patient);
+
         User next_patient = patients.get_next_user();
 
+        // simulation timer, each tick is 1 minute of simulation
         for (int i = 0; i< max_time; i++) {
 
+            // If a new patient has arrived this minute, or we are out of patients
             if (next_patient != null && next_patient.getTime_arrived() == i) {
+                next_patient.start_waiting(i);
                 receptionist_queue.add_user(next_patient);
                 next_patient = patients.get_next_user();
             }
 
+            // Advance a minute forward
             receptionist.tick();
             senior_doctor.tick();
             junior_doctor.tick();
         }
 
-//        TODO: Add stopping functionality to servers
-
+        // View if system is working correctly
         print_all_stats(senior_doctor, junior_doctor, receptionist);
     }
 
