@@ -1,6 +1,6 @@
 public class User {
 
-    private int service_time;
+    private int service_time; // service time required by doctor
     private int severity;
     private long time_waited;
     private long time_arrived;

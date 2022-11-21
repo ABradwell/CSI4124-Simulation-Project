@@ -1,32 +1,24 @@
 public abstract class Server {
 
-    private int cur_time;
+    protected int curr_time = -1;
 
-    private int time_busy;
-    private int time_idle;
-    private int number_served;
-    private long hourly_wage;
-    private User current_user_being_served;
-    private int time_serving_current_user;
-    private boolean running;
-    private boolean busy;
+    protected int time_busy = 0;
+    protected int time_idle = -1;
+    protected int time_maintainence = 0;
+    protected int number_served = 0;
+    protected User current_user_being_served = null;
+    protected int remaining_service_time = 0;
+    protected boolean isRunning = false;
+    protected boolean isBusy = false;
+    protected boolean isMaintenance = false;
+    protected String name;
+    protected long hourly_wage;
+    protected PatientQueue my_queue;
 
-    private PatientQueue linked_queue;
-
-    public Server() {
-
-    }
-
-    public Server(int time_busy, int time_idle, int number_served, long hourly_wage, User current_user_being_served, boolean running, boolean busy, PatientQueue linked_queue, int time_serving_current_user) {
-        this.time_busy = time_busy;
-        this.time_idle = time_idle;
-        this.number_served = number_served;
+    public Server(String name, long hourly_wage, int max_number_of_users) {
+        this.name = name;
         this.hourly_wage = hourly_wage;
-        this.current_user_being_served = current_user_being_served;
-        this.time_serving_current_user = time_serving_current_user;
-        this.running = running;
-        this.busy = busy;
-        this.linked_queue = linked_queue;
+        this.my_queue = new PatientQueue(max_number_of_users);
     }
 
     public int getTime_busy() {
@@ -69,68 +61,87 @@ public abstract class Server {
         this.current_user_being_served = current_user_being_served;
     }
 
-    public int getCur_time() {
-        return cur_time;
+    public int getCurr_time() {
+        return curr_time;
     }
 
-    public void setCur_time(int cur_time) {
-        this.cur_time = cur_time;
+    public void setcurr_time(int curr_time) {
+        this.curr_time = curr_time;
     }
 
-    public int getTime_serving_current_user() {
-        return time_serving_current_user;
+    public int getRemaining_service_time() {
+        return remaining_service_time;
     }
 
-    public void setTime_serving_current_user(int time_serving_current_user) {
-        this.time_serving_current_user = time_serving_current_user;
+    public void setRemaining_service_time(int remaining_service_time) {
+        this.remaining_service_time = remaining_service_time;
     }
 
     public boolean isBusy() {
-        return busy;
+        return isBusy;
     }
 
-    public void setBusy(boolean busy) {
-        this.busy = busy;
+    public void setBusy(boolean isBusy) {
+        this.isBusy = isBusy;
     }
 
-    public PatientQueue getLinked_queue() {
-        return linked_queue;
+    public PatientQueue getMy_queue() {
+        return my_queue;
     }
 
-    public void setLinked_queue(PatientQueue linked_queue) {
-        this.linked_queue = linked_queue;
+    public void setMy_queue(PatientQueue my_queue) {
+        this.my_queue = my_queue;
     }
 
     public boolean isRunning() {
-        return running;
+        return isRunning;
     }
 
-    public void setRunning(boolean running) {
-        this.running = running;
+    public void setIsRunning(boolean isRunning) {
+        this.isRunning = isRunning;
     }
 
     //    ---------------------------------------------------------------------------------
 
 
     // Abstract since the doctors will serve using equipment, while the receptionist uses a determining equation
-    public abstract void serve_user();
+    public abstract boolean serve_user();
 
     // Method which launches a constant loop asynchronously running the servers inner workings (taking patients from linked queue)
     public abstract void run_server();
+    
+    public abstract boolean isUnderMaintenance();
 
     public abstract void stop_server();
 
     public void tick() {
 
-        cur_time++;
+        curr_time++;
 
-        if (busy) {
+        if (isMaintenance) {
+            time_maintainence++;
+        }
+        if (isBusy) {
             time_busy++;
+            remaining_service_time--;
+            if (remaining_service_time == 0) {
+                isBusy = serve_user();
+            }
         } else {
             time_idle++;
+            isBusy = serve_user();
         }
-
-        time_serving_current_user++;
     }
 
+    public String toString() {
+        String msg = "";
+        msg += String.format("Name: %s\n", name);
+        msg += String.format("  Wage: %s\n", hourly_wage);
+        msg += String.format("  Cust. Served: %s\n", number_served);
+        msg += String.format("  Time Busy: %s\n", time_busy);
+        msg += String.format("  Time Idle: %s\n", time_idle);
+        msg += String.format("  Maintainence Time: %s\n", time_maintainence);
+        
+        return msg;
+    }
 }

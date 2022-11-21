@@ -12,10 +12,18 @@ public class PatientQueue {
 
     public PatientQueue() {
 
-        this.max_number_of_users = 150;
+        this.max_number_of_users = Integer.MAX_VALUE;
         this.current_user_count = 0;
         this.total_wait_time = 0;
-        this.users = new LinkedList<>();
+        this.users = new LinkedList<User>();
+    }
+
+    public PatientQueue(int max_number_of_users) {
+
+        this.max_number_of_users = max_number_of_users;
+        this.current_user_count = 0;
+        this.total_wait_time = 0;
+        this.users = new LinkedList<User>();
     }
 
     public PatientQueue(int max_number_of_users, int current_user_count, int total_wait_time, Queue<User> users) {
@@ -68,7 +76,7 @@ public class PatientQueue {
          */
         this.users.add(u);
         this.current_user_count += 1;
-        //total_wait_time; ?
+        this.total_wait_time += u.getService_time();
     }
 
     public User get_next_user() {
@@ -79,6 +87,7 @@ public class PatientQueue {
         if (next_user != null){
             this.users.remove();
             this.current_user_count -= 1;
+            this.total_wait_time -= next_user.getService_time();
             return next_user;
         } else {
             return null;
