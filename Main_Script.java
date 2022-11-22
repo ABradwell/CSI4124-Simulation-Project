@@ -14,14 +14,15 @@ public class Main_Script {
     private static final int MAX_NUM_USERS_JDOC = 150;
     private static final int MAX_NUM_USERS_SDOC = 150;
 
-    public static void print_all_stats(Server receptions, Server senior_doctor, Server junior_doctor, PatientQueue exit_patients) {
+    public static void print_all_stats(Server receptionist, Server senior_doctor, Server junior_doctor, PatientQueue exit_patients) {
         /**
          *     This function outputs the information for the system.
          *     Used to display and verify the system is correctly functioning
          */
-        System.out.println(receptions);
+        System.out.println(receptionist);
         System.out.println(senior_doctor);
         System.out.println(junior_doctor);
+        System.out.println("-------------------------------------------------\n");
         System.out.println(exit_patients);
     }
 
@@ -36,7 +37,7 @@ public class Main_Script {
         Random random = new Random();
         PatientQueue patients = new PatientQueue();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
 
                 int rand_arrival =random.ints(1, 101).findFirst().getAsInt();
                 int rand_severity = random.ints(1, 1001).findFirst().getAsInt();
@@ -75,7 +76,7 @@ public class Main_Script {
     public static void main(String[] args) {
 
         // time units are in minutes
-        int hours_of_simulation = 48;
+        int hours_of_simulation = 72;
         long max_time = 60*hours_of_simulation;
 
         // Create out 3 queues

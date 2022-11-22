@@ -138,9 +138,9 @@ public class PatientQueue {
     }
 
     public String toString() {
-
-        String msg = "Total User Data:\n";
+        String msg = "";
         if (getUserCount(0) != 0) {
+            msg += "Total User Data:\n";
             msg += String.format("  Users Served: %s\n", getUserCount(0));
             msg += String.format("  Average Wait Time: %s\n", getTotalWaitTime()/getUserCount(0));
             msg += String.format("  Average Service Time: %s\n\n", getTotalServiceTime(0)/getUserCount(0));
