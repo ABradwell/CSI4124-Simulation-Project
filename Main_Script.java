@@ -10,24 +10,19 @@ public class Main_Script {
     private static final int HOURLY_WAGE_JDOC = 86;
     private static final int HOURLY_WAGE_SDOC = 165;
 
-    private static final int MAX_NUM_USERS_REC = 150;
+    private static final int MAX_NUM_USERS_REC = Integer.MAX_VALUE;
     private static final int MAX_NUM_USERS_JDOC = 150;
     private static final int MAX_NUM_USERS_SDOC = 150;
 
-    private static final int EQUIPMENT_LIFETIME_JDOC = 600;
-    private static final int EQUIPMENT_LIFETIME_SDOC = 600;
-
-    public static void print_all_stats(Server receptions, Server senior_doctor, Server junior_doctor) {
+    public static void print_all_stats(Server receptions, Server senior_doctor, Server junior_doctor, PatientQueue exit_patients) {
         /**
          *     This function outputs the information for the system.
          *     Used to display and verify the system is correctly functioning
          */
         System.out.println(receptions);
-        System.out.println(receptions.my_queue);
         System.out.println(senior_doctor);
-        System.out.println(senior_doctor.my_queue);
         System.out.println(junior_doctor);
-        System.out.println(junior_doctor.my_queue);
+        System.out.println(exit_patients);
     }
 
     public static PatientQueue generate_patient_data() {
@@ -72,7 +67,7 @@ public class Main_Script {
                 }
                 
                 t += arrival;
-                patients.add_user(new User(0, severity, 0, t));
+                patients.add_user(new User(severity, t));
         }
         return patients;
     }
@@ -87,17 +82,18 @@ public class Main_Script {
         PatientQueue receptionist_queue = new PatientQueue(MAX_NUM_USERS_REC);
         PatientQueue senior_doctor_queue = new PatientQueue(MAX_NUM_USERS_JDOC);
         PatientQueue junior_doctor_queue = new PatientQueue(MAX_NUM_USERS_SDOC);
+        PatientQueue exit_patients = new PatientQueue();
 
         // Create the receptionist, linked to the first queue
         Receptionist receptionist = new Receptionist(NAME_REC, HOURLY_WAGE_REC, MAX_NUM_USERS_REC, senior_doctor_queue, junior_doctor_queue);
         receptionist.setMy_queue(receptionist_queue);
 
         // Create the senior doctor, and assign their queue
-        Doctor senior_doctor = new Doctor(NAME_SDOC, HOURLY_WAGE_SDOC, MAX_NUM_USERS_SDOC, true);
+        Doctor senior_doctor = new Doctor(NAME_SDOC, HOURLY_WAGE_SDOC, MAX_NUM_USERS_SDOC, true, exit_patients);
         senior_doctor.setMy_queue(senior_doctor_queue);
 
         // Create junior doctor, and assign their queue
-        Doctor junior_doctor = new Doctor(NAME_JDOC, HOURLY_WAGE_JDOC, MAX_NUM_USERS_JDOC, false);
+        Doctor junior_doctor = new Doctor(NAME_JDOC, HOURLY_WAGE_JDOC, MAX_NUM_USERS_JDOC, false, exit_patients);
         junior_doctor.setMy_queue(junior_doctor_queue);
 
         // Create patients for simulation
@@ -105,7 +101,7 @@ public class Main_Script {
 
         // Get first patient from incoming queue, prepare to run simulation
         User first_patient = patients.get_next_user();
-        first_patient.stop_waiting(0);
+        first_patient.start_waiting(0);
         receptionist_queue.add_user(first_patient);
 
         User next_patient = patients.get_next_user();
@@ -127,7 +123,7 @@ public class Main_Script {
         }
 
         // View if system is working correctly
-        print_all_stats(senior_doctor, junior_doctor, receptionist);
+        print_all_stats(senior_doctor, junior_doctor, receptionist, exit_patients);
     }
 
 

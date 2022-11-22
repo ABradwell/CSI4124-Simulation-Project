@@ -105,13 +105,60 @@ public class PatientQueue {
         }
     }
 
+    private long getTotalWaitTime() {
+        long total_wait_times = 0;
+        for (User usr: users) {
+            total_wait_times += usr.getTime_waited();
+        }
+        return total_wait_times;
+    }
+
+    // Calculates total service time in of the queue given a severity.
+    // If severity = 0, returns total service time of the entire queue
+    private long getTotalServiceTime(int severity) {
+        long total_service_times = 0;
+        for (User usr: users) {
+            if (severity == 0 || severity == usr.getSeverity()) {
+                total_service_times += usr.getTime_serviced();
+            }
+        }
+        return total_service_times;
+    }
+    
+    // Gets user count in of the queue given a severity.
+    // If severity = 0, returns user count of the entire queue
+    private long getUserCount(int severity) {
+        long usr_count = 0;
+        for (User usr: users) {
+            if (severity == 0 || severity == usr.getSeverity()) {
+                usr_count++;
+            }
+        }
+        return usr_count;
+    }
+
     public String toString() {
 
-        String msg = "  Queue Data:\n";
+        String msg = "Total User Data:\n";
+        if (getUserCount(0) != 0) {
+            msg += String.format("  Users Served: %s\n", getUserCount(0));
+            msg += String.format("  Average Wait Time: %s\n", getTotalWaitTime()/getUserCount(0));
+            msg += String.format("  Average Service Time: %s\n\n", getTotalServiceTime(0)/getUserCount(0));
+        }
+        else {
+            msg += String.format("  No Users Were Served\n\n");
+        }
 
-        msg += String.format("      max_number_of_users: %s\n", max_number_of_users);
-        msg += String.format("      current_user_count: %s\n", current_user_count);
-        msg += String.format("      total_wait_time: %s\n", total_wait_time);
+        for (int i = 1; i <= 5; i++) {
+            if (getUserCount(i) != 0) {
+                msg += String.format("CTAS %s User Data:\n", i);
+                msg += String.format("  Users Served: %s\n", getUserCount(i));
+                msg += String.format("  Average Service Time: %s\n\n", getTotalServiceTime(i)/getUserCount(i));
+            }
+            else {
+                msg += String.format("No users at CTAS %s were served\n\n", i);
+            }
+        }
 
         return msg;
     }

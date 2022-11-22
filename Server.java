@@ -1,9 +1,9 @@
 public abstract class Server {
 
-    protected int curr_time = -1;
+    protected int curr_time = 0;
 
     protected int time_busy = 0;
-    protected int time_idle = -1;
+    protected int time_idle = 0;
     protected int time_maintainence = 0;
     protected int number_served = 0;
     protected User current_user_being_served = null;
@@ -19,22 +19,6 @@ public abstract class Server {
         this.name = name;
         this.hourly_wage = hourly_wage;
         this.my_queue = new PatientQueue(max_number_of_users);
-    }
-
-    public int getTime_busy() {
-        return time_busy;
-    }
-
-    public void setTime_busy(int time_busy) {
-        this.time_busy = time_busy;
-    }
-
-    public int getTime_idle() {
-        return time_idle;
-    }
-
-    public void setTime_idle(int time_idle) {
-        this.time_idle = time_idle;
     }
 
     public int getNumber_served() {
@@ -69,22 +53,6 @@ public abstract class Server {
         this.curr_time = curr_time;
     }
 
-    public int getRemaining_service_time() {
-        return remaining_service_time;
-    }
-
-    public void setRemaining_service_time(int remaining_service_time) {
-        this.remaining_service_time = remaining_service_time;
-    }
-
-    public boolean isBusy() {
-        return isBusy;
-    }
-
-    public void setBusy(boolean isBusy) {
-        this.isBusy = isBusy;
-    }
-
     public PatientQueue getMy_queue() {
         return my_queue;
     }
@@ -115,17 +83,22 @@ public abstract class Server {
 
         curr_time++;
 
+
+
         if (isMaintenance) {
             time_maintainence++;
         }
-        if (isBusy) {
+        else if (isBusy) {
             time_busy++;
-            remaining_service_time--;
-            if (remaining_service_time == 0) {
-                isBusy = serve_user();
-            }
-        } else {
+        }
+        else {
             time_idle++;
+        }
+
+        if (isBusy) {
+            remaining_service_time--;
+        } 
+        if (!isBusy || remaining_service_time < 0) {
             isBusy = serve_user();
         }
     }

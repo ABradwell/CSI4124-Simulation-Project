@@ -6,16 +6,19 @@ public class Doctor extends Server {
     private static final int BREAKDOWN_FREQUENCY = 600;
     private static final int BREAKDOWN_DURATION = 10;
 
+
     private long on_break_time_start = 0;
     private long breakdown_time_start = 0;
 
+    private PatientQueue exitPatients;
     private boolean isSeniorDoctor;
     private boolean isBrokenDown = false;
     private boolean isOnBreak = false;
 
-    public Doctor(String name, long hourly_wage, int max_number_of_users, boolean isSeniorDoctor) {
+    public Doctor(String name, long hourly_wage, int max_number_of_users, boolean isSeniorDoctor, PatientQueue exit_patients) {
         super(name, hourly_wage, max_number_of_users);
         this.isSeniorDoctor = isSeniorDoctor;
+        this.exitPatients = exit_patients;
 //        this.equipment = equipment;
     }
 
@@ -34,17 +37,18 @@ public class Doctor extends Server {
         }
 
         User next_usr = my_queue.get_next_user();
-        isBusy = true;
         if (next_usr == null) {
-            isBusy = false;
             return false;
         }
 
-        next_usr.stop_waiting(this.curr_time);
+        next_usr.start_service(this.curr_time);
 
         number_served += 1;
         current_user_being_served = next_usr;
         remaining_service_time = next_usr.getService_time();
+        next_usr.start_waiting(this.curr_time + remaining_service_time);
+        
+        exitPatients.add_user(next_usr);
 
         return true;
     }

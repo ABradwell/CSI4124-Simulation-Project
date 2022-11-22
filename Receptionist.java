@@ -75,25 +75,23 @@ public class Receptionist extends Server {
         User next_usr = my_queue.get_next_user();
 
         if (next_usr == null) {
-            isBusy = false;
             return false;
         }
 
 
-        next_usr.stop_waiting(this.curr_time);
+        next_usr.start_service(this.curr_time);
 
         number_served += 1;
         current_user_being_served = next_usr;
         remaining_service_time = 2 * (5-next_usr.getSeverity()) + 3;
+        next_usr.start_waiting(this.curr_time + remaining_service_time);
 
         if (assignJuniorDoctor(next_usr) && juniorDoc_queue.room_for_more_patients() || !seniorDoc_queue.room_for_more_patients()) {
             next_usr.setService_time(calculateServiceTime(next_usr, false));
-            next_usr.start_waiting(this.curr_time);
             juniorDoc_queue.add_user(next_usr);
         }
         else if (seniorDoc_queue.room_for_more_patients()) {
             next_usr.setService_time(calculateServiceTime(next_usr, true));
-            next_usr.start_waiting(this.curr_time);
             seniorDoc_queue.add_user(next_usr);
         } else {
             queues_both_full = true;
