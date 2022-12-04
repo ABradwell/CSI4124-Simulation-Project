@@ -5,8 +5,12 @@ import java.util.Queue;
 public class PatientQueue {
 
     private int max_number_of_users;
+
+    private int longest_queue_length;
     private int current_user_count;
     private int total_wait_time;
+
+    private int time_empty = 0;
 
 
     private Queue<User> users;
@@ -16,6 +20,7 @@ public class PatientQueue {
         this.max_number_of_users = Integer.MAX_VALUE;
         this.current_user_count = 0;
         this.total_wait_time = 0;
+        this.longest_queue_length = 0;
         this.users = new LinkedList<User>();
     }
 
@@ -27,11 +32,12 @@ public class PatientQueue {
         this.users = new LinkedList<User>();
     }
 
-    public PatientQueue(int max_number_of_users, int current_user_count, int total_wait_time, Queue<User> users) {
+    public PatientQueue(int max_number_of_users, int current_user_count, int total_wait_time, int longest_queue_length, Queue<User> users) {
         this.max_number_of_users = max_number_of_users;
         this.current_user_count = current_user_count;
         this.total_wait_time = total_wait_time;
         this.users = users;
+        this.longest_queue_length = longest_queue_length;
     }
 
     public int getMax_number_of_users() {
@@ -66,8 +72,23 @@ public class PatientQueue {
         this.users = users;
     }
 
+    public int getLongest_queue_length() {
+        return longest_queue_length;
+    }
 
-//    ------------------------------------------------------------
+    public void setLongest_queue_length(int longest_queue_length) {
+        this.longest_queue_length = longest_queue_length;
+    }
+
+    public int getTime_empty() {
+        return time_empty;
+    }
+
+    public void setTime_empty(int time_empty) {
+        this.time_empty = time_empty;
+    }
+
+    //    ------------------------------------------------------------
 
     public boolean room_for_more_patients() {
 
@@ -83,6 +104,11 @@ public class PatientQueue {
 
         this.users.add(u);
         this.current_user_count += 1;
+
+        if (this.current_user_count > this.longest_queue_length) {
+            this.longest_queue_length = this.current_user_count;
+        }
+
         this.total_wait_time += u.getService_time();
 
     }
@@ -127,7 +153,7 @@ public class PatientQueue {
     
     // Gets user count in of the queue given a severity.
     // If severity = 0, returns user count of the entire queue
-    private long getUserCount(int severity) {
+    public long getUserCount(int severity) {
         long usr_count = 0;
         for (User usr: users) {
             if (severity == 0 || severity == usr.getSeverity()) {
