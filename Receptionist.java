@@ -2,19 +2,18 @@ import java.lang.Math;
 
 public class Receptionist extends Server {
 
-    private static final int MAX_DISCRIMINANT_DIFFERENCE = 30;
-
-    private static final int JDOC_SERVICE_TIME_C1 = 395;
-    private static final int JDOC_SERVICE_TIME_C2 = 403;
-    private static final int JDOC_SERVICE_TIME_C3 = 200;
-    private static final int JDOC_SERVICE_TIME_C4 = 66;
-    private static final int JDOC_SERVICE_TIME_C5 = 37;
+    private static final int JDOC_SERVICE_TIME_C1 = (int) Math.round(395/3);
+    private static final int JDOC_SERVICE_TIME_C2 = (int) Math.round(403/3);
+    private static final int JDOC_SERVICE_TIME_C3 = (int) Math.round(200/3);
+    private static final int JDOC_SERVICE_TIME_C4 = (int) Math.round(66/3);
+    private static final int JDOC_SERVICE_TIME_C5 = (int) Math.round(37/3);
 
 
     private PatientQueue seniorDoc_queue;
     private PatientQueue juniorDoc_queue;
 
     private boolean queues_both_full;
+    private int ctas3_junior_doc = 1;
 
     public Receptionist(String name, long hourly_wage, int max_number_of_users, PatientQueue seniorDoc_queue, PatientQueue juniorDoc_queue) {
         super(name, hourly_wage, max_number_of_users);
@@ -64,6 +63,7 @@ public class Receptionist extends Server {
 //            System.out.println("Junior queue full!");
 //
 //        }
+
         if(!seniorDoc_queue.room_for_more_patients() && !juniorDoc_queue.room_for_more_patients()) {
             queues_both_full = true;
             System.out.println("Both queues full!");
@@ -83,15 +83,17 @@ public class Receptionist extends Server {
 
         number_served += 1;
         current_user_being_served = next_usr;
-        remaining_service_time = 2 * (5-next_usr.getSeverity()) + 3;
+        remaining_service_time = 2 * (next_usr.getSeverity()) + 1;
         next_usr.start_waiting(this.curr_time + remaining_service_time);
 
         if (assignJuniorDoctor(next_usr) && juniorDoc_queue.room_for_more_patients() || !seniorDoc_queue.room_for_more_patients()) {
             next_usr.setService_time(calculateServiceTime(next_usr, false));
+            next_usr.setPriority(calculatePriority(next_usr));
             juniorDoc_queue.add_user(next_usr);
         }
         else if (seniorDoc_queue.room_for_more_patients()) {
             next_usr.setService_time(calculateServiceTime(next_usr, true));
+            next_usr.setPriority(calculatePriority(next_usr));
             seniorDoc_queue.add_user(next_usr);
         } else {
             queues_both_full = true;
@@ -111,21 +113,26 @@ public class Receptionist extends Server {
          * @param usr: Current user being served by the receptionist.
          */
 
-        if (Math.abs(seniorDoc_queue.getTotal_wait_time() - juniorDoc_queue.getTotal_wait_time()) <= MAX_DISCRIMINANT_DIFFERENCE) {
-            if (usr.getSeverity() <= 3) {
+        if (usr.getSeverity() <= 2) {
+            return false;
+        }
+        else if (usr.getSeverity() == 3) {
+            switch(ctas3_junior_doc) {  
+              case 1:
+                ctas3_junior_doc++;
                 return false;
-            }
-            else {
+              case 2:
+                ctas3_junior_doc++;
                 return true;
+              case 3:
+                ctas3_junior_doc = 1;
+                return true;
+              default:
+                return false;
             }
         }
         else {
-            if (seniorDoc_queue.getTotal_wait_time() <= juniorDoc_queue.getTotal_wait_time()) {
-                return false;
-            }
-            else {
-                return true;
-            }
+            return true;
         }
     }
 
@@ -165,6 +172,49 @@ public class Receptionist extends Server {
         }
         
         return serviceTime;
+    }
+
+    private int calculatePriority(User usr) {
+        int priority;
+        if (usr.getSeverity() == 1) {
+            priority = 1;
+        }
+        else if (usr.getSeverity() == 2) {
+            priority = 81+curr_time;
+        }
+        else if (usr.getSeverity() == 3) {
+            priority = 151+curr_time;
+        }
+        else if (usr.getSeverity() == 4) {
+            priority = 158+curr_time;
+        }
+        else if (usr.getSeverity() == 5) {
+            priority = 146+curr_time;
+        }
+        else {
+            priority = -1;
+        }
+        return priority;
+        // if (usr.getSeverity() == 1) {
+        //     priority_adjust = 24;
+        // }
+        // else if (usr.getSeverity() == 2) {
+        //     priority_adjust = 81;
+        // }
+        // else if (usr.getSeverity() == 3) {
+        //     priority_adjust = 151;
+        // }
+        // else if (usr.getSeverity() == 4) {
+        //     priority_adjust = 158;
+        // }
+        // else if (usr.getSeverity() == 5) {
+        //     priority_adjust = 146;
+        // }
+        // else {
+        //     priority_adjust = -1;
+        // }
+
+        // return Math.min(usr.getSeverity()-1, 1)*(priority_adjust+curr_time);
     }
 
 

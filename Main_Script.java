@@ -10,6 +10,7 @@ public class Main_Script {
     private static final int HOURLY_WAGE_JDOC = 86;
     private static final int HOURLY_WAGE_SDOC = 165;
 
+    private static final int NUM_USERS = 50;
     private static final int MAX_NUM_USERS_REC = Integer.MAX_VALUE;
     private static final int MAX_NUM_USERS_JDOC = 150;
     private static final int MAX_NUM_USERS_SDOC = 150;
@@ -37,7 +38,7 @@ public class Main_Script {
         Random random = new Random();
         PatientQueue patients = new PatientQueue();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < NUM_USERS; i++) {
 
                 int rand_arrival =random.ints(1, 101).findFirst().getAsInt();
                 int rand_severity = random.ints(1, 1001).findFirst().getAsInt();
@@ -68,7 +69,7 @@ public class Main_Script {
                 }
                 
                 t += arrival;
-                patients.add_user(new User(severity, t));
+                patients.add_user(new User(severity, arrival, t, t));
         }
         return patients;
     }
@@ -76,7 +77,7 @@ public class Main_Script {
     public static void main(String[] args) {
 
         // time units are in minutes
-        int hours_of_simulation = 72;
+        int hours_of_simulation = 144;
         long max_time = 60*hours_of_simulation;
 
         // Create out 3 queues
@@ -90,11 +91,11 @@ public class Main_Script {
         receptionist.setMy_queue(receptionist_queue);
 
         // Create the senior doctor, and assign their queue
-        Doctor senior_doctor = new Doctor(NAME_SDOC, HOURLY_WAGE_SDOC, MAX_NUM_USERS_SDOC, true, exit_patients);
+        Doctor senior_doctor = new Doctor(NAME_SDOC, HOURLY_WAGE_SDOC, MAX_NUM_USERS_SDOC, true, exit_patients, junior_doctor_queue);
         senior_doctor.setMy_queue(senior_doctor_queue);
 
         // Create junior doctor, and assign their queue
-        Doctor junior_doctor = new Doctor(NAME_JDOC, HOURLY_WAGE_JDOC, MAX_NUM_USERS_JDOC, false, exit_patients);
+        Doctor junior_doctor = new Doctor(NAME_JDOC, HOURLY_WAGE_JDOC, MAX_NUM_USERS_JDOC, false, exit_patients, senior_doctor_queue);
         junior_doctor.setMy_queue(junior_doctor_queue);
 
         // Create patients for simulation

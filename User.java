@@ -1,20 +1,41 @@
-public class User {
+import java.util.*;
+
+public class User implements Comparable<User> {
 
     private int service_time; // service time required by doctor
     private int severity;
+    private int interarrival_time;
+    private long priority;
     private long time_arrived;
     private long time_waited;
     private long time_serviced;
 
+    private long time_in_ED = -1;
+    private long time_to_doctor = -1;
     private long last_time_waiting_started = -1;
     private long last_time_servicing_started = -1;
 
     public User() {
     }
 
-    public User(int severity, long time_arrived) {
+    public User(int severity, int interarrival_time, long time_arrived, long priority) {
         this.severity = severity;
+        this.interarrival_time = interarrival_time;
         this.time_arrived = time_arrived;
+        this.priority = priority;
+    }
+
+    @Override
+    public int compareTo(User u) {
+        return u.priority > this.priority ? -1 : 1;
+    }
+
+    public long getPriority() {
+        return priority;
+    }
+
+    public void setPriority(long priority) {
+        this.priority = priority;
     }
 
     public int getService_time() {
@@ -31,6 +52,14 @@ public class User {
 
     public void setSeverity(int severity) {
         this.severity = severity;
+    }
+
+    public int getInterarrivalTime() {
+        return interarrival_time;
+    }
+
+    public void setInterarrivalTime(int interarrival_time) {
+        this.interarrival_time = interarrival_time;
     }
 
     public long getTime_waited() {
@@ -55,6 +84,22 @@ public class User {
 
     public void setTime_arrived(long time_arrived) {
         this.time_arrived = time_arrived;
+    }
+
+    public long getTimeToDoctor() {
+        return time_to_doctor;
+    }
+
+    public void setTimeToDoctor(long curr_time) {
+        this.time_to_doctor = curr_time - time_arrived;
+    }
+
+    public long getTimeInED() {
+        return time_in_ED;
+    }
+
+    public void setTimeInED(long time_discharged) {
+        this.time_in_ED = time_discharged - time_arrived;
     }
 
     public void start_waiting (int curr_time) {

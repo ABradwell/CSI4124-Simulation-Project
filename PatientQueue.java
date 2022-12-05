@@ -1,6 +1,7 @@
 
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.PriorityQueue;
+import java.util.*;
 
 public class PatientQueue {
 
@@ -9,14 +10,14 @@ public class PatientQueue {
     private int total_wait_time;
 
 
-    private Queue<User> users;
+    //private Queue<User> users;
+    private PriorityQueue<User> users = new PriorityQueue<>();
 
     public PatientQueue() {
 
         this.max_number_of_users = Integer.MAX_VALUE;
         this.current_user_count = 0;
         this.total_wait_time = 0;
-        this.users = new LinkedList<User>();
     }
 
     public PatientQueue(int max_number_of_users) {
@@ -24,10 +25,9 @@ public class PatientQueue {
         this.max_number_of_users = max_number_of_users;
         this.current_user_count = 0;
         this.total_wait_time = 0;
-        this.users = new LinkedList<User>();
     }
 
-    public PatientQueue(int max_number_of_users, int current_user_count, int total_wait_time, Queue<User> users) {
+    public PatientQueue(int max_number_of_users, int current_user_count, int total_wait_time, PriorityQueue<User> users) {
         this.max_number_of_users = max_number_of_users;
         this.current_user_count = current_user_count;
         this.total_wait_time = total_wait_time;
@@ -62,7 +62,7 @@ public class PatientQueue {
         return users;
     }
 
-    public void setUsers(Queue<User> users) {
+    public void setUsers(PriorityQueue<User> users) {
         this.users = users;
     }
 
@@ -113,6 +113,14 @@ public class PatientQueue {
         return total_wait_times;
     }
 
+    private long getTotalInterarrivalTime() {
+        long total_interarrival_time = 0;
+        for (User usr: users) {
+            total_interarrival_time += usr.getInterarrivalTime();
+        }
+        return total_interarrival_time;
+    }
+
     // Calculates total service time in of the queue given a severity.
     // If severity = 0, returns total service time of the entire queue
     private long getTotalServiceTime(int severity) {
@@ -123,6 +131,30 @@ public class PatientQueue {
             }
         }
         return total_service_times;
+    }
+
+    // Calculates total time to doctor of the queue given a severity.
+    // If severity = 0, returns total service time of the entire queue
+    private long getTotalTimeToDoctor(int severity) {
+        long total_time_to_doctor = 0;
+        for (User usr: users) {
+            if (severity == 0 || severity == usr.getSeverity()) {
+                total_time_to_doctor += usr.getTimeToDoctor();
+            }
+        }
+        return total_time_to_doctor;
+    }
+
+    // Calculates total time in the ED of the queue given a severity.
+    // If severity = 0, returns total service time of the entire queue
+    private long getTotalTimeInED(int severity) {
+        long total_time_in_ED = 0;
+        for (User usr: users) {
+            if (severity == 0 || severity == usr.getSeverity()) {
+                total_time_in_ED += usr.getTimeInED();
+            }
+        }
+        return total_time_in_ED;
     }
     
     // Gets user count in of the queue given a severity.
@@ -142,6 +174,10 @@ public class PatientQueue {
         if (getUserCount(0) != 0) {
             msg += "Total User Data:\n";
             msg += String.format("  Users Served: %s\n", getUserCount(0));
+            msg += String.format("  Average Time To Doctor: %s\n", getTotalTimeToDoctor(0)/getUserCount(0));
+            msg += String.format("  Average Time in ED: %s\n", getTotalTimeInED(0)/getUserCount(0));
+            msg += String.format("  Average Interarrival Time: %s\n", getTotalInterarrivalTime()/getUserCount(0));
+
             msg += String.format("  Average Wait Time: %s\n", getTotalWaitTime()/getUserCount(0));
             msg += String.format("  Average Service Time: %s\n\n", getTotalServiceTime(0)/getUserCount(0));
         }
@@ -153,6 +189,8 @@ public class PatientQueue {
             if (getUserCount(i) != 0) {
                 msg += String.format("CTAS %s User Data:\n", i);
                 msg += String.format("  Users Served: %s\n", getUserCount(i));
+                msg += String.format("  Average Time To Doctor: %s\n", getTotalTimeToDoctor(i)/getUserCount(i));
+                msg += String.format("  Average Time in ED: %s\n", getTotalTimeInED(i)/getUserCount(i));
                 msg += String.format("  Average Service Time: %s\n\n", getTotalServiceTime(i)/getUserCount(i));
             }
             else {
