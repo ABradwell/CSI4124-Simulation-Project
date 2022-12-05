@@ -136,7 +136,7 @@ public class Main_Script {
 
 
         int number_of_runs = 100000;
-        int n = 50;
+        int n = 150;
         for (int iteration = 0; iteration < number_of_runs; iteration++) {
 
 
