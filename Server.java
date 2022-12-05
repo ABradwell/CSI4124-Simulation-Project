@@ -69,6 +69,70 @@ public abstract class Server {
         this.isRunning = isRunning;
     }
 
+    public void setCurr_time(int curr_time) {
+        this.curr_time = curr_time;
+    }
+
+    public int getTime_busy() {
+        return time_busy;
+    }
+
+    public void setTime_busy(int time_busy) {
+        this.time_busy = time_busy;
+    }
+
+    public int getTime_idle() {
+        return time_idle;
+    }
+
+    public void setTime_idle(int time_idle) {
+        this.time_idle = time_idle;
+    }
+
+    public int getTime_maintainence() {
+        return time_maintainence;
+    }
+
+    public void setTime_maintainence(int time_maintainence) {
+        this.time_maintainence = time_maintainence;
+    }
+
+    public int getRemaining_service_time() {
+        return remaining_service_time;
+    }
+
+    public void setRemaining_service_time(int remaining_service_time) {
+        this.remaining_service_time = remaining_service_time;
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
+    }
+
+    public boolean isBusy() {
+        return isBusy;
+    }
+
+    public void setBusy(boolean busy) {
+        isBusy = busy;
+    }
+
+    public boolean isMaintenance() {
+        return isMaintenance;
+    }
+
+    public void setMaintenance(boolean maintenance) {
+        isMaintenance = maintenance;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     //    ---------------------------------------------------------------------------------
 
     public abstract boolean serve_user();
@@ -101,6 +165,11 @@ public abstract class Server {
         if (!isBusy || remaining_service_time < 0) {
             isBusy = serve_user();
         }
+
+        if(this.my_queue.getCurrent_user_count() == 0) {
+            this.my_queue.setTime_empty(this.my_queue.getTime_empty() + 1);
+        }
+
     }
 
     public String toString() {
@@ -111,7 +180,12 @@ public abstract class Server {
         msg += String.format("  Time Busy: %s\n", time_busy);
         msg += String.format("  Time Idle: %s\n", time_idle);
         msg += String.format("  Maintainence Time: %s\n", time_maintainence);
-        
+        msg += String.format("  QUEUE DATA: \n");
+        msg += String.format("      q Current User Count: %s\n", my_queue.getCurrent_user_count());
+        msg += String.format("      q Max number of users: %s\n", my_queue.getMax_number_of_users());
+        msg += String.format("      q Total Wait Time: %s\n", my_queue.getTotal_wait_time());
+        msg += String.format("      q Longest Queue Length: %s\n", my_queue.getLongest_queue_length());
+        msg += String.format("      q Time Empty: %s\n", my_queue.getTime_empty());
         return msg;
     }
 }
