@@ -10,6 +10,7 @@ public class PatientQueue {
     private int current_user_count;
     private int total_wait_time;
 
+    private int total_time_waited = 0;
     private int time_empty = 0;
 
 
@@ -88,6 +89,14 @@ public class PatientQueue {
         this.time_empty = time_empty;
     }
 
+    public int getTotal_time_waited() {
+        return total_time_waited;
+    }
+
+    public void setTotal_time_waited(int total_time_waited) {
+        this.total_time_waited = total_time_waited;
+    }
+
     //    ------------------------------------------------------------
 
     public boolean room_for_more_patients() {
@@ -108,6 +117,7 @@ public class PatientQueue {
         if (this.current_user_count > this.longest_queue_length) {
             this.longest_queue_length = this.current_user_count;
         }
+
 
         this.total_wait_time += u.getService_time();
 

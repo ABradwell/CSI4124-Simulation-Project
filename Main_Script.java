@@ -119,24 +119,24 @@ public class Main_Script {
         int avg_r_longest_length = 0;
         int avg_r_current_size = 0;
 //        int avg_r_through = 0;
-        int avg_r_total_wait = 0;
+        long avg_r_total_wait = 0;
         int avg_r_time_empty = 0;
 
         int avg_s_longest_length = 0;
         int avg_s_current_size = 0;
 //        int avg_s_through = 0;
-        int avg_s_total_wait = 0;
+        long avg_s_total_wait = 0;
         int avg_s_time_empty = 0;
 
         int avg_j_longest_length = 0;
         int avg_j_current_size = 0;
 //        int avg_j_through = 0;
-        int avg_j_total_wait = 0;
+        long avg_j_total_wait = 0;
         int avg_j_time_empty = 0;
 
 
         int number_of_runs = 100000;
-        int n = 10000;
+        int n = 50;
         for (int iteration = 0; iteration < number_of_runs; iteration++) {
 
 
@@ -178,6 +178,10 @@ public class Main_Script {
 
             // simulation timer, each tick is 1 minute of simulation
             for (int i = 0; i < max_time; i++) {
+                
+                receptionist_queue.setTotal_time_waited(receptionist_queue.getTotal_time_waited() + receptionist_queue.getCurrent_user_count());
+                senior_doctor_queue.setTotal_time_waited(senior_doctor_queue.getTotal_time_waited() + senior_doctor_queue.getCurrent_user_count());
+                junior_doctor_queue.setTotal_time_waited(junior_doctor_queue.getTotal_time_waited() + junior_doctor_queue.getCurrent_user_count());
 
                 // If a new patient has arrived this minute, or we are out of patients
                 if (next_patient != null && next_patient.getTime_arrived() == i) {
@@ -212,17 +216,18 @@ public class Main_Script {
             avg_r_longest_length = avg_r_longest_length + receptionist_queue.getLongest_queue_length();
             avg_r_current_size = avg_r_current_size + receptionist_queue.getCurrent_user_count();
 //            avg_r_through = avg_r_through + receptionist_queue.get;
-            avg_r_total_wait = avg_r_total_wait + receptionist_queue.getTotal_wait_time();
+            avg_r_total_wait = avg_r_total_wait + receptionist_queue.getTotal_time_waited();
             avg_r_time_empty = avg_r_time_empty + receptionist_queue.getTime_empty();
             avg_s_longest_length = avg_s_longest_length + senior_doctor_queue.getLongest_queue_length();
             avg_s_current_size = avg_s_current_size + senior_doctor_queue.getCurrent_user_count();
 //            avg_s_through = avg_s_through + ;
-            avg_s_total_wait = avg_s_total_wait + senior_doctor_queue.getTotal_wait_time();
+            avg_s_total_wait = avg_s_total_wait + senior_doctor_queue.getTotal_time_waited();
+
             avg_s_time_empty = avg_s_time_empty + senior_doctor_queue.getTime_empty();
             avg_j_longest_length = avg_j_longest_length + junior_doctor_queue.getLongest_queue_length();
             avg_j_current_size = avg_j_current_size + junior_doctor_queue.getCurrent_user_count();
 //            avg_j_through = avg_j_through + ;
-            avg_j_total_wait = avg_j_total_wait + junior_doctor_queue.getTotal_wait_time();
+            avg_j_total_wait = avg_j_total_wait + junior_doctor_queue.getTotal_time_waited();
             avg_j_time_empty = avg_j_time_empty + junior_doctor_queue.getTime_empty();
 
 
@@ -316,7 +321,7 @@ public class Main_Script {
         System.out.println("avg_j_served = " + avg_j_served);
         System.out.println("avg_j_time_busy = " + avg_j_time_busy);
         System.out.println("avg_j_time_idle = " + avg_j_time_idle);
-
+        System.out.println("----------------------------------------");
         System.out.println("avg_r_longest_length = " + avg_r_longest_length);
         System.out.println("avg_r_current_size = " + avg_r_current_size);
 //        System.out.println("avg_r_through = " + avg_r_through);

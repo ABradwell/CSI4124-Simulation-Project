@@ -145,6 +145,8 @@ public abstract class Server {
          * running in parallel, this method assures that each server steps forward at the same time.
          */
 
+
+
         curr_time++;
 
 
@@ -169,6 +171,7 @@ public abstract class Server {
         if(this.my_queue.getCurrent_user_count() == 0) {
             this.my_queue.setTime_empty(this.my_queue.getTime_empty() + 1);
         }
+
     }
 
     public String toString() {
